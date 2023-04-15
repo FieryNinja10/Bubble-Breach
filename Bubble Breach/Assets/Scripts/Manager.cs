@@ -9,6 +9,9 @@ using Cinemachine;
 public class Manager : MonoBehaviour
 {
     [SerializeField] private GameObject pauseMenu;
+    [SerializeField] private GameObject winScreen;
+    [SerializeField] private GameObject loseScreen;
+    [SerializeField] private GameObject optionsMenu;
     [SerializeField] private string[] sentences, names;
     [SerializeField] private Transform[] lookAtDialogue;
     [SerializeField] private Animator dialogueAnim;
@@ -20,15 +23,53 @@ public class Manager : MonoBehaviour
     void Start()
     {
         i = 0;
-        dialogueAnim.Play("Start");
+        dialogueAnim.SetTrigger("StartDialogue");
         DisplayNextSentence();
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
-        
+        if(Input.GetKeyDown(KeyCode.Escape))
+        {
+            PauseMenu();
+        }
     }
+
+    // Menus
+
+        // Pause Menu
+
+    public void PauseMenu() {
+        pauseMenu.SetActive(true);
+        Time.timeScale = 0;
+    }
+
+    public void Resume()
+    {
+        Time.timeScale = 1;
+        pauseMenu.SetActive(false);
+    }
+
+        // Options
+
+    public void OpenOptions() {
+        optionsMenu.SetActive(true);
+    }
+
+        // Lose Menu
+
+    public void LoseScreen() {
+        loseScreen.SetActive(true);
+    }
+
+        // Win Menu
+
+    public void WinScreen() {
+        winScreen.SetActive(true);
+    }
+
+    // Scene
 
     public void NextLevel()
     {
@@ -40,23 +81,20 @@ public class Manager : MonoBehaviour
         SceneManager.LoadScene(0);
     }
 
-    public void Resume()
-    {
-        Time.timeScale = 1;
-        pauseMenu.SetActive(false);
-    }
 
     public void Restart()
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 
+    // Dialogue
+
     public void DisplayNextSentence()
     {
         if(i >= sentences.Length - 1)
         {
             camera.Follow = player;
-            dialogueAnim.Play("End");
+            dialogueAnim.SetTrigger("EndDialogue");
             Player.canMove = true;
             return;
         }
@@ -67,7 +105,6 @@ public class Manager : MonoBehaviour
         StopAllCoroutines();
         StartCoroutine(DialogueTextAnim(sentences[i]));
         i++;
-        
     }
 
     private IEnumerator DialogueTextAnim(string toType)

@@ -7,10 +7,8 @@ public class Player : MonoBehaviour
 {
     [SerializeField] private float speed;
     [SerializeField] private GameObject popParticles;
-    [SerializeField] private GameObject winScreen;
-    [SerializeField] private GameObject loseScreen;
-    [SerializeField] private GameObject pauseMenu;
     [SerializeField] private GameObject shield;
+    private Manager manager;
     public static bool canMove = false;
     public GameObject key = null;
     private Animator anim;
@@ -19,6 +17,7 @@ public class Player : MonoBehaviour
     {
         Time.timeScale = 1;
         anim = gameObject.GetComponent<Animator>();
+        manager = GameObject.Find("Essentials").GetComponent<Manager>();
     }
 
     void Start()
@@ -33,12 +32,6 @@ public class Player : MonoBehaviour
         if(canMove)
         {
             transform.position += new Vector3(horizontal, vertical, 0) * Time.deltaTime * speed;
-        }
-
-        if(Input.GetKeyDown(KeyCode.Escape))
-        {
-            pauseMenu.SetActive(true);
-            Time.timeScale = 0;
         }
 
         if(key != null)
@@ -65,7 +58,7 @@ public class Player : MonoBehaviour
         if(collider.gameObject.CompareTag("NextLevel"))
         {
             var script = gameObject.GetComponent<Player>();
-            winScreen.SetActive(true);
+            manager.WinScreen();
             anim.SetTrigger("Win");
             Time.timeScale = 0;
             Destroy(script);
@@ -84,7 +77,7 @@ public class Player : MonoBehaviour
         Destroy(spriteRenderer);
         popParticles.SetActive(true);
         yield return new WaitForSeconds(1);
-        loseScreen.SetActive(true);
+        manager.LoseScreen();
         Time.timeScale = 0;
         Destroy(script);
     }
